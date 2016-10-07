@@ -18,6 +18,7 @@ import types
 import urllib
 import urllib2
 import urlparse
+import requests
 
 # Copyright 2010 Dirk Holtwick, holtwick.it
 #
@@ -546,39 +547,10 @@ class pisaFileObject:
                 if basepath:
                     uri = urlparse.urljoin(basepath, uri)
 
-                #path = urlparse.urlsplit(url)[2]
-                #mimetype = getMimeType(path)
-
-                # Using HTTPLIB
-                server, path = urllib.splithost(uri[uri.find("//"):])
-                if uri.startswith("https://"):
-                    conn = httplib.HTTPSConnection(server)
-                else:
-                    conn = httplib.HTTPConnection(server)
-                conn.request("GET", path)
-                r1 = conn.getresponse()
-                # log.debug("HTTP %r %r %r %r", server, path, uri, r1)
-                if (r1.status, r1.reason) == (200, "OK"):
-                    self.mimetype = r1.getheader("Content-Type", '').split(";")[0]
-                    self.uri = uri
-                    if r1.getheader("content-encoding") == "gzip":
-                        import gzip
-                        try:
-                            import cStringIO as StringIO
-                        except:
-                            import StringIO
-
-                        self.file = gzip.GzipFile(mode="rb", fileobj=StringIO.StringIO(r1.read()))
-                    else:
-                        self.file = r1
-                else:
-                    try:
-                        urlResponse = urllib2.urlopen(uri)
-                    except urllib2.HTTPError:
-                        return
-                    self.mimetype = urlResponse.info().get("Content-Type", '').split(";")[0]
-                    self.uri = urlResponse.geturl()
-                    self.file = urlResponse
+                response = requests.get(uri)
+                self.file = response.raw
+                self.uri = uri
+                self.mimetype = response.headers['Content-Type']
 
             else:
 

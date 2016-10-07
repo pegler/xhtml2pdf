@@ -35,13 +35,7 @@ import reportlab.pdfbase.pdfform as pdfform
 import sys
 
 
-try:
-    import PIL.Image as PILImage
-except:
-    try:
-        import Image as PILImage
-    except:
-        PILImage = None
+import Image as PILImage
 
 log = logging.getLogger("xhtml2pdf")
 

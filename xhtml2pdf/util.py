@@ -548,7 +548,7 @@ class pisaFileObject:
                     uri = urlparse.urljoin(basepath, uri)
 
                 response = requests.get(uri)
-                self.file = StringIO.StringIO(response.contents)
+                self.file = StringIO.StringIO(response.content)
                 self.uri = uri
                 self.mimetype = response.headers['Content-Type']
 
